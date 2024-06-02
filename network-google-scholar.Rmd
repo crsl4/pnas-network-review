@@ -1,0 +1,59 @@
+# Getting data from [Web of Science](https://www.webofscience.com/wos/woscc/basic-search)
+
+I searched all papers with "phylogenetic networks" in title or abstract (see query link [here](https://www.webofscience.com/wos/woscc/summary/c754b716-2ce8-47af-a298-5e16fefa7230-ef16f729/relevance/1)).
+
+There are 7288 records, but you cannot download them all at the same time, so I have to download as excel 1000 at a time.
+ 
+Raw datafiles in folder `data`:
+- `savedrecs.xls`
+- `savedrecs (1).xls`
+- `savedrecs (2).xls`
+- `savedrecs (3).xls`
+- `savedrecs (4).xls`
+- `savedrecs (5).xls`
+- `savedrecs (6).xls`
+- `savedrecs (7).xls`
+ 
+which I renamed to remove spaces and parenthesis as:
+- `savedrecs.xls`
+- `savedrecs1.xls`
+- `savedrecs2.xls`
+- `savedrecs3.xls`
+- `savedrecs4.xls`
+- `savedrecs5.xls`
+- `savedrecs6.xls`
+- `savedrecs7.xls`
+
+Sadly, we need to manually save as tab separated files (not csv bc commas separate author names) because you get an error if trying to open directly in R.
+
+Not that we have to do other manual work. Since it is a tab separated file, we use `sep='\t'` to read it, but if the file as an actual `\t` in the text, it will break. So, we need to replace all `\t` with `x`.
+
+Actually, now that we are doing manual work, we might as well delete unnecessary columns. We will keep:
+- article title
+- source title (journal)
+- times cited (all databases)
+- publication year
+
+I should have kept the raw files, but I saved in place, and then saved as csv:
+- `savedrecs.csv`
+- `savedrecs1.csv`
+- `savedrecs2.csv`
+- `savedrecs3.csv`
+- `savedrecs4.csv`
+- `savedrecs5.csv`
+- `savedrecs6.csv`
+- `savedrecs7.csv`
+
+
+
+## Read all the datafiles and extract only column we need (year)
+
+```{r}
+d = read.table("data/savedrecs.txt", sep='\t', header=TRUE)
+```
+
+
+
+# Future work
+
+We originally wanted to do this for "abba-baba" and combination of citations of snaq+phylonet, but we won't do that because we do not need that many statistics, I think.
