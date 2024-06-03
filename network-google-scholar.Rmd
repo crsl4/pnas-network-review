@@ -46,13 +46,72 @@ I should have kept the raw files, but I saved in place, and then saved as csv:
 
 
 
-## Read all the datafiles and extract only column we need (year)
+## Read all the datafiles
 
 ```{r}
-d = read.table("data/savedrecs.txt", sep='\t', header=TRUE)
+d = read.csv("data/savedrecs.csv", header=TRUE)
+d1 = read.csv("data/savedrecs1.csv", header=TRUE)
+d2 = read.csv("data/savedrecs2.csv", header=TRUE)
+d3 = read.csv("data/savedrecs3.csv", header=TRUE)
+d4 = read.csv("data/savedrecs4.csv", header=TRUE)
+d5 = read.csv("data/savedrecs5.csv", header=TRUE)
+d6 = read.csv("data/savedrecs6.csv", header=TRUE)
+d7 = read.csv("data/savedrecs7.csv", header=TRUE)
+
+df <- rbind(d,d1,d2,d3,d4,d5,d6,d7)
+head(df)
+str(df)
+```
+## Getting counts of papers per year
+
+```{r}
+df.counts = as.data.frame(table(df$Publication.Year))
+str(df.counts)
+
+df.counts2 <- within(df.counts, Var1 <- as.numeric(as.character(Var1)))
+str(df.counts2)
 ```
 
+We want to remove everything before 1994:
+```{r}
+df.c = df.counts2[df.counts2$Var1>1993,]
+```
 
+## Plotting the number of publications
+
+```{r}
+library(ggplot2)
+library(viridis)
+library(wesanderson)
+pal <- wes_palette("Royal2", 10, type = "continuous")
+#pal <- wes_palette("Darjeeling2", 10, type = "continuous")
+#pal <- wes_palette("Chevalier1", 10, type = "continuous")
+#pal <- wes_palette("Moonrise2", 10, type = "continuous")
+
+pdf("publications.pdf",width=10,height=10)
+ggplot(df.c,aes(x=Var1,y=Freq, fill=Var1))+geom_bar(stat="identity")+
+#ggplot(df.c,aes(x=Var1,y=Freq, fill=Freq))+geom_bar(stat="identity")+
+  xlab("")+ylab("")+
+  scale_x_continuous(breaks = seq(1994, 2024, by = 1))+
+  theme(
+          axis.text.x = element_text(colour="grey", size=rel(2.0), angle=90, hjust=.5, vjust=.5, face="plain"),
+          axis.text.y = element_text(colour="grey", size=rel(2.0), hjust=.5, vjust=.5, face="plain"),
+          axis.ticks.x = element_blank(),
+          panel.background = element_rect(fill = NA, color = "grey"),
+          axis.line = element_line(colour = "grey"),
+          strip.text = element_text(size = rel(1.5)),
+          legend.position = "none"
+        )+
+  scale_fill_gradientn(colours = pal)
+  #scale_fill_viridis(direction=-1)
+  #scale_fill_viridis(option="magma", direction=-1)
+dev.off()
+```
+
+## Focusing on both year and journal
+```{r}
+df.counts3 = as.data.frame(table(df$Publication.Year, df$Source.Title))
+```
 
 # Future work
 
